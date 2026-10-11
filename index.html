@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Thuyết Minh: Thực Hiện Pháp Luật</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            800: '#0B192C',
+                            900: '#070F1E',
+                            950: '#030712',
+                        },
+                        gold: {
+                            400: '#FACC15',
+                            500: '#EAB308',
+                            600: '#CA8A04',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #F3F4F6;
+            overflow-x: hidden;
+        }
+
+        .slide-aspect {
+            aspect-ratio: 16 / 9;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card-gold {
+            background: rgba(30, 27, 15, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(234, 179, 8, 0.25);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #FFF 30%, #FACC15 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-accent {
+            background: linear-gradient(135deg, #EAB308 0%, #CA8A04 100%);
+        }
+
+        .slide-transition {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-navy-950 text-slate-100 flex flex-col justify-between items-center p-2 sm:p-4 md:p-6 select-none">
+
+    <!-- Top Control Bar -->
+    <header class="w-full max-w-7xl flex justify-between items-center bg-navy-900/80 backdrop-blur border border-slate-800 rounded-xl px-4 py-3 mb-3 shadow-lg z-20">
+        <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-gold-500 animate-pulse"></span>
+            <span class="font-bold text-sm sm:text-base tracking-wide text-slate-200">PHÁP LUẬT ĐẠI CƯƠNG • CHƯƠNG IV</span>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-4">
+            <!-- Slide Selector -->
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-slate-400 text-xs"></i>
+                <select id="slideSelect" class="bg-navy-800 text-xs sm:text-sm border border-slate-700 rounded-lg px-2 py-1 text-slate-200 focus:outline-none focus:border-gold-500 cursor-pointer">
+                    <!-- Dynamic options populate here -->
+                </select>
+            </div>
+
+            <button id="fullscreenBtn" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800/60 rounded-lg transition" title="Toàn màn hình">
+                <i class="fa-solid fa-expand text-base"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="w-full max-w-7xl bg-slate-800/80 rounded-full h-1.5 mb-3 overflow-hidden">
+        <div id="progressBar" class="bg-gradient-to-r from-gold-500 to-amber-300 h-full w-0 transition-all duration-300"></div>
+    </div>
+
+    <!-- Main Presentation Deck Container -->
+    <main class="w-full max-w-7xl relative flex-1 flex items-center justify-center my-auto">
+        <div id="slideViewport" class="w-full slide-aspect glass-card rounded-2xl relative overflow-hidden shadow-2xl flex flex-col justify-between border border-slate-800/80">
+            <!-- Dynamic Slide Content Inserted Here -->
+            <div id="slideContent" class="w-full h-full p-6 sm:p-10 md:p-12 slide-transition flex flex-col justify-between overflow-y-auto hide-scrollbar">
+                <!-- Javascript will render slide content here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Footer Nav Controls -->
+    <footer class="w-full max-w-7xl flex flex-col sm:flex-row justify-between items-center gap-3 mt-3 bg-navy-900/80 border border-slate-800 rounded-xl px-4 py-3 z-20">
+        <div class="text-xs text-slate-400 flex items-center gap-2">
+            <i class="fa-solid fa-user-group text-gold-500"></i>
+            <span>Báo cáo viên: <strong class="text-slate-200">Nông Quốc Đạt</strong> & <strong class="text-slate-200">Lò Văn Cường</strong> </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span id="slideCounter" class="text-xs sm:text-sm font-semibold text-slate-400 px-2">1 / 20</span>
+
+            <button id="prevBtn" class="px-4 py-2 text-xs sm:text-sm font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden sm:inline">Trước</span>
+            </button>
+
+            <button id="nextBtn" class="px-5 py-2 text-xs sm:text-sm font-bold bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 rounded-lg shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                <span class="hidden sm:inline">Tiếp</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        const slidesData = [
+            // Slide 1
+            {
+                type: "title",
+                title: "THỰC HIỆN PHÁP LUẬT",
+                subtitle: "Lý luận căn bản, các hình thức áp dụng & Vận dụng thực tiễn",
+                category: "BÁO CÁO CHUYÊN ĐỀ PHÁP LUẬT ĐẠI CƯƠNG",
+                presenters: ["Nông Quốc Đạt", "Lò Văn Cường"],
+                badge: "",
+                bgImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1600&q=80"
+            },
+            // Slide 2
+            {
+                type: "objectives",
+                title: "Mục Tiêu Bài Học",
+                category: "TỔNG QUAN",
+                items: [
+                    { icon: "fa-brain", title: "Nắm Vững Khái Niệm", desc: "Hiểu rõ bản chất, đặc điểm cốt lõi và vai trò của Thực hiện pháp luật." },
+                    { icon: "fa-diagram-project", title: "Phân Loại 4 Hình Thức", desc: "Phân biệt Sử dụng, Thi hành, Tuân thủ và Áp dụng pháp luật chuẩn xác." },
+                    { icon: "fa-scale-balanced", title: "Đặc Thù Áp Dụng", desc: "Nắm vững quy trình và tính chất đặc biệt của Áp dụng Pháp luật." },
+                    { icon: "fa-user-graduate", title: "Vận Dụng Thực Tế", desc: "Giải quyết tình huống pháp lý đời sống và học tập của sinh viên." }
+                ]
+            },
+            // Slide 3
+            {
+                type: "hook",
+                title: "Tại Sao Luật Chỉ Có Giá Trị Khi Được Thực Hiện?",
+                category: "ĐẶT VẤN ĐỀ",
+                quote: "« Pháp luật hay đến đâu nhưng chỉ nằm trên giấy thì xã hội vẫn không có trật tự. Giá trị thực sự nằm ở sự vận hành đời sống. »",
+                stats: [
+                    { number: "100%", label: "Quy phạm cần thực thi" },
+                    { number: "4", label: "Hình thức thực hiện chính" },
+                    { number: "24/7", label: "Tác động đến đời sống" }
+                ],
+                bgImage: "https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?auto=format&fit=crop&w=1200&q=80"
+            },
+            // Slide 4
+            {
+                type: "concept",
+                title: "Khái Niệm Thực Hiện Pháp Luật",
+                category: "ĐỊNH NGHĨA KHOA HỌC",
+                mainText: "Thực hiện pháp luật là hành vi thực tế có mục đích của các chủ thể pháp luật nhằm hiện thực hóa các quy định của pháp luật vào đời sống xã hội.",
+                points: [
+                    { label: "Hành vi thực tế", detail: "Là hoạt động xử sự cụ thể (hành động hoặc không hành động), không chỉ nằm ở ý thức hay suy nghĩ." },
+                    { label: "Tính hợp pháp", detail: "Hành vi được thực hiện phù hợp với khuôn khổ và yêu cầu mà quy phạm pháp luật đặt ra." },
+                    { label: "Mục đích rõ ràng", detail: "Nhằm đạt được các quyền lợi, nghĩa vụ hoặc duy trì trật tự an toàn xã hội." }
+                ],
+                bgImage: "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1000&q=80"
+            },
+            // Slide 5
+            {
+                type: "features",
+                title: "3 Đặc Điểm Bản Chất Của THPL",
+                category: "ĐẶC ĐIỂM CỐT LÕI",
+                cards: [
+                    { num: "01", title: "Là hành vi xử sự thực tế", desc: "Hiện thực hóa ý chí của nhà nước bằng hành động hoặc không hành động cụ thể của chủ thể.", icon: "fa-hand-fist" },
+                    { num: "02", title: "Do chủ thể pháp luật thực hiện", desc: "Chủ thể bao gồm cá nhân, cơ quan, tổ chức có năng lực hành vi pháp lý theo quy định.", icon: "fa-users flex-shrink-0" },
+                    { num: "03", title: "Nội dung do luật quy định", desc: "Xử sự của chủ thể bị giới hạn và định hướng bởi các quy phạm pháp luật hiện hành.", icon: "fa-book-bookmark" }
+                ]
+            },
+            // Slide 6
+            {
+                type: "examples",
+                title: "Minh Họa Trực Quan Trở Thành Thực Tế",
+                category: "VÍ DỤ THỰC TẾ",
+                examples: [
+                    { tag: "Giao Thông", title: "Dừng xe trước đèn đỏ", desc: "Không vượt đèn đỏ là hành vi tuân thủ pháp luật giao thông đường bộ.", img: "https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=600&q=80" },
+                    { tag: "Tài Chính", title: "Nộp thuế thu nhập", desc: "Cá nhân/Doanh nghiệp nộp nghĩa vụ tài chính đúng thời hạn theo Luật Thuế.", img: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=600&q=80" },
+                    { tag: "Giáo Dục", title: "Đăng ký kết hôn", desc: "Công dân chủ động thực hiện quyền nhân thân tại UBND xã/phường.", img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=600&q=80" }
+                ]
+            },
+            // Slide 7
+            {
+                type: "grid4",
+                title: "4 Hình Thức Thực Hiện Pháp Luật",
+                category: "PHÂN LOẠI TỔNG QUAN",
+                forms: [
+                    { id: "1", name: "Sử dụng pháp luật", badge: "Quyền hạn", desc: "Chủ thể thực hiện quyền của mình (được làm gì).", color: "from-blue-600 to-indigo-700" },
+                    { id: "2", name: "Thi hành pháp luật", badge: "Nghĩa vụ", desc: "Chủ thể chủ động thực hiện nghĩa vụ (phải làm).", color: "from-emerald-600 to-teal-700" },
+                    { id: "3", name: "Tuân thủ pháp luật", badge: "Cấm đoán", desc: "Chủ thể kiềm chế không làm điều cấm (không được làm).", color: "from-amber-600 to-orange-700" },
+                    { id: "4", name: "Áp dụng pháp luật", badge: "Quyền lực NN", desc: "Cơ quan Nhà nước ra quyết định pháp lý cụ thể.", color: "from-rose-600 to-red-700" }
+                ]
+            },
+            // Slide 8
+            {
+                type: "detail_form",
+                title: "1. Sử Dụng Pháp Luật",
+                category: "HÌNH THỨC 1",
+                badge: "Hành vi chủ động thực hiện QUYỀN",
+                def: "Các cá nhân, tổ chức thực hiện QUYỀN HẠN của mình - làm những gì mà pháp luật CHỌ CHO PHÉP LÀM.",
+                characteristics: [
+                    "Mang tính chủ động: Quyết định thực hiện hay không phụ thuộc vào ý chí chủ thể.",
+                    "Không bắt buộc: Việc không thực hiện quyền không dẫn đến xử phạt pháp lý.",
+                    "Ví dụ: Quyền tự do kinh doanh, quyền khiếu nại tố cáo, quyền học tập, quyền lập di thừa kế."
+                ],
+                img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1000&q=80"
+            },
+            // Slide 9
+            {
+                type: "detail_form",
+                title: "2. Thi Hành Pháp Luật",
+                category: "HÌNH THỨC 2",
+                badge: "Hành vi chủ động thực hiện NGHĨA VỤ",
+                def: "Các cá nhân, tổ chức chủ động thực hiện NGHĨA VỤ BẮT BUỘC mà pháp luật quy định PHẢI LÀM.",
+                characteristics: [
+                    "Mang tính bắt buộc: Phải hành động tích cực để đáp ứng yêu cầu của luật.",
+                    "Nếu không làm: Sẽ chịu các hình thức chế tài xử lý theo quy định.",
+                    "Ví dụ: Công dân thực hiện nghĩa vụ quân sự, nghĩa vụ nộp thuế, bảo vệ môi trường."
+                ],
+                img: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=1000&q=80"
+            },
+            // Slide 10
+            {
+                type: "detail_form",
+                title: "3. Tuân Thủ Pháp Luật",
+                category: "HÌNH THỨC 3",
+                badge: "Thụ động kiềm chế - KHÔNG LÀM điều cấm",
+                def: "Các cá nhân, tổ chức kiềm chế không thực hiện những hành vi mà pháp luật CẤM DOANH.",
+                characteristics: [
+                    "Mang tính thụ động: Thể hiện ở dạng không hành động (kiềm chế bản thân).",
+                    "Áp dụng rộng rãi: Tất cả mọi chủ thể trong xã hội đều phải tuân thủ.",
+                    "Ví dụ: Không tàng trữ chất cấm, không vượt đèn đỏ, không nhận hối lộ, không tham nhũng."
+                ],
+                img: "https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1000&q=80"
+            },
+            // Slide 11
+            {
+                type: "detail_form",
+                title: "4. Áp Dụng Pháp Luật",
+                category: "HÌNH THỨC 4",
+                badge: "Hoạt động mang TÍNH QUYỀN LỰC NHÀ NƯỚC",
+                def: "Cơ quan nhà nước, nhà chức trách có thẩm quyền căn cứ pháp luật để ra các quyết định làm phát sinh, thay đổi hoặc chấm dứt quan hệ pháp luật.",
+                characteristics: [
+                    "Mang tính quyền lực nhà nước đặc thụ.",
+                    "Do chủ thể có thẩm quyền thực hiện theo thủ tục chặt chẽ.",
+                    "Ví dụ: Tòa án tuyên án, Công an xử phạt vi phạm giao thông, UBND cấp giấy chứng nhận nhận sử dụng đất."
+                ],
+                img: "https://images.unsplash.com/photo-1589994965851-a8f479c573a9?auto=format&fit=crop&w=1000&q=80"
+            },
+            // Slide 12
+            {
+                type: "special_ad",
+                title: "Đặc Điểm Riêng Của Áp Dụng Pháp Luật",
+                category: "SỰ KHÁC BIỆT NỔI BẬT",
+                points: [
+                    { title: "Chủ thể đặc biệt", text: "Chỉ có Cơ quan nhà nước, người có thẩm quyền hoặc tổ chức được nhà nước trao quyền mới có thể áp dụng." },
+                    { title: "Tính quyền lực đơn phương", text: "Quyết định có hiệu lực bắt buộc thi hành đối với các bên liên quan, dù họ có đồng ý hay không." },
+                    { title: "Được thực hiện theo thủ tục luật định", text: "Trình tự, thủ tục được quy định chi tiết trong văn bản pháp luật (Luật tố tụng, xử phạt hành chính...)." },
+                    { title: "Cá biệt hóa quy phạm pháp luật", text: "Chuyển quy tắc chung thành quy định cụ thể cho trường hợp cụ thể, đối tượng cụ thể." }
+                ]
+            },
+            // Slide 13
+            {
+                type: "cases_ad",
+                title: "Các Trường Hợp Cần Áp Dụng Pháp Luật",
+                category: "KHI NÀO CẦN ÁP DỤNG?",
+                list: [
+                    { icon: "fa-gavel", text: "Khi xảy ra vi phạm pháp luật hoặc tranh chấp về quyền & nghĩa vụ mà các bên không tự giải quyết được." },
+                    { icon: "fa-certificate", text: "Khi các quyền và nghĩa vụ cụ thể của công dân không tự phát sinh nếu thiếu sự can thiệp của Nhà nước (VD: Đăng ký kết hôn, giao đất)." },
+                    { icon: "fa-user-shield", text: "Khi Nhà nước kiểm tra, giám sát việc thực hiện quyền & nghĩa vụ của các chủ thể." },
+                    { icon: "fa-award", text: "Khi Nhà nước khen thưởng cá nhân, tổ chức có thành tích xuất sắc." }
+                ],
+                bgImage: "https://images.unsplash.com/photo-1436450412740-6b988f486c6b?auto=format&fit=crop&w=1000&q=80"
+            },
+            // Slide 14
+            {
+                type: "comparison",
+                title: "Bảng So Sánh 4 Hình Thức THPL",
+                category: "TỔNG HỢP & PHÂN BIỆT",
+                headers: ["Hình thức", "Chủ thể", "Tính chất hành vi", "Dạng quy phạm tương ứng"],
+                rows: [
+                    ["Sử dụng PL", "Mọi cá nhân, tổ chức", "Chủ động thực hiện quyền", "Quy phạm cho phép"],
+                    ["Thi hành PL", "Mọi cá nhân, tổ chức", "Chủ động thực hiện nghĩa vụ", "Quy phạm bắt buộc"],
+                    ["Tuân thủ PL", "Mọi cá nhân, tổ chức", "Thụ động (Kiềm chế không làm)", "Quy phạm cấm đoán"],
+                    ["Áp dụng PL", "Cơ quan / Người có thẩm quyền", "Quyền lực Nhà nước đơn phương", "Các loại quy phạm"]
+                ]
+            },
+            // Slide 15
+            {
+                type: "student",
+                title: "Vận Dụng Cho Sinh Viên Đại Học",
+                category: "LIÊN HỆ THỰC TIỄN",
+                actions: [
+                    { title: "Sử dụng PL", detail: "Đăng ký môn học theo nguyện vọng, khiếu nại điểm thi, bầu cử Hội sinh viên.", color: "border-blue-500" },
+                    { title: "Thi hành PL", detail: "Đóng học phí đúng hạn, tham gia khám sức khỏe quân sự, chấp hành nội quy trường.", color: "border-emerald-500" },
+                    { title: "Tuân thủ PL", detail: "Không gian lận thi cử, không tàng trữ tài liệu cấm, không vi phạm an toàn giao thông.", color: "border-amber-500" },
+                    { title: "Chấp hành Áp dụng PL", detail: "Thực hiện đúng quyết định khen thưởng hoặc kỷ luật từ Ban Giám hiệu nhà trường.", color: "border-rose-500" }
+                ],
+                bgImage: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=80"
+            },
+            // Slide 16
+            {
+                type: "quiz",
+                title: "Tình Huống 1: Ý Thức Giao Thông",
+                category: "THẢO LUẬN TÌNH HUỐNG",
+                scenario: "Sinh viên A chạy xe máy đến ngã tư, thấy đèn đỏ A chủ động dừng xe lại trước vạch quy định. Bạn B nộp phạt vi phạm tốc độ do Cảnh sát giao thông lập biên bản.",
+                question: "Hành vi của sinh viên A và Cảnh sát giao thông thuộc hình thức thực hiện pháp luật nào?",
+                answer: "• Hành vi sinh viên A dừng đèn đỏ: Tuân thủ pháp luật (không làm điều bị cấm).\n• Hành vi CSGT ra quyết định xử phạt: Áp dụng pháp luật (Cơ quan thẩm quyền ra quyết định pháp lý)."
+            },
+            // Slide 17
+            {
+                type: "quiz",
+                title: "Tình Huống 2: Khởi Nghiệp Sinh Viên",
+                category: "THẢO LUẬN TÌNH HUỐNG",
+                scenario: "Sau khi tốt nghiệp, bạn C đăng ký thành lập Công ty TNHH để kinh doanh phần mềm. Hàng tháng, công ty của C thực hiện kê khai và nộp thuế đầy đủ cho cơ quan thuế.",
+                question: "Xác định 2 hình thức thực hiện pháp luật thể hiện qua hành vi của C?",
+                answer: "• Đăng ký thành lập công ty kinh doanh: Sử dụng pháp luật (Thực hiện quyền tự do kinh doanh).\n• Kê khai và nộp thuế hàng tháng: Thi hành pháp luật (Chủ động thực hiện nghĩa vụ tài chính bắt buộc)."
+            },
+            // Slide 18
+            {
+                type: "quiz",
+                title: "Tình Huống 3: Quyền Tố Cáo & Xử Lý",
+                category: "THẢO LUẬN TÌNH HUỐNG",
+                scenario: "Phát hiện cơ sở sản xuất bên cạnh xả thải chui ra sông, Anh D gửi đơn tố cáo tới Sở Tài nguyên & Môi trường. Sau khi kiểm tra, Giám đốc Sở ra quyết định xử phạt cơ sở này 50 triệu đồng.",
+                question: "Phân tích hình thức thực hiện pháp luật của Anh D và Giám đốc Sở?",
+                answer: "• Anh D gửi đơn tố cáo: Sử dụng pháp luật (Thực hiện quyền công dân tố cáo hành vi vi phạm).\n• Giám đốc Sở ra quyết định xử phạt: Áp dụng pháp luật (Quyền lực nhà nước mang tính cá biệt)."
+            },
+            // Slide 19
+            {
+                type: "summary",
+                title: "Ghi Nhớ Cốt Lõi",
+                category: "TỔNG KẾT BÀI HỌC",
+                bullets: [
+                    "Thực hiện pháp luật là hành vi thực tế biến quy định luật thành đời sống.",
+                    "Nhớ công thức: Sử dụng = Quyền | Thi hành = Nghĩa vụ | Tuân thủ = Cấm | Áp dụng = Nhà nước.",
+                    "Áp dụng pháp luật mang tính quyền lực nhà nước, do chủ thể thẩm quyền thực hiện.",
+                    "Mỗi sinh viên cần thượng tôn pháp luật từ những hành vi nhỏ nhất mỗi ngày."
+                ],
+                bgImage: "https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?auto=format&fit=crop&w=1200&q=80"
+            },
+            // Slide 20
+            {
+                type: "thankyou",
+                title: "CẢM ƠN THẦY CÔ VÀ CÁC BẠN ĐÃ LẮNG NGHE!",
+                subtitle: "Rất mong nhận được đóng góp ý kiến từ Thầy Cô & các bạn sinh viên",
+                presenters: ["Nông Quốc Đạt", "Lò Văn Cường"],
+                badge: "Nhóm 1 • Pháp luật Đại chương",
+                bgImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80"
+            }
+        ];
+
+        let currentSlide = 0;
+
+        // Elements
+        const slideContent = document.getElementById('slideContent');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const slideSelect = document.getElementById('slideSelect');
+        const slideCounter = document.getElementById('slideCounter');
+        const progressBar = document.getElementById('progressBar');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        function initSelectOptions() {
+            slideSelect.innerHTML = '';
+            slidesData.forEach((slide, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = `Slide ${index + 1}: ${slide.title}`;
+                slideSelect.appendChild(opt);
+            });
+        }
+
+        function renderSlide(index) {
+            const data = slidesData[index];
+            slideCounter.textContent = `${index + 1} / ${slidesData.length}`;
+            progressBar.style.width = `${((index + 1) / slidesData.length) * 100}%`;
+            slideSelect.value = index;
+
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === slidesData.length - 1;
+
+            let html = '';
+
+            switch(data.type) {
+                case "title":
+                    html = `
+                        <div class="relative w-full h-full flex flex-col justify-between p-6 sm:p-10 rounded-xl overflow-hidden">
+                            <div class="absolute inset-0 z-0 opacity-20 bg-cover bg-center" style="background-image: url('${data.bgImage}')"></div>
+                            <div class="absolute inset-0 z-0 bg-gradient-to-t from-navy-950 via-navy-950/80 to-transparent"></div>
+                            
+                            <div class="relative z-10 flex justify-between items-start">
+                                <span class="px-3 py-1 bg-gold-500/20 text-gold-400 border border-gold-500/30 rounded-full text-xs font-semibold tracking-wider uppercase">${data.category}</span>
+                                <span class="px-3 py-1 bg-slate-800 text-slate-300 rounded-full text-xs font-bold border border-slate-700">${data.badge}</span>
+                            </div>
+
+                            <div class="relative z-10 my-auto text-center sm:text-left max-w-3xl">
+                                <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight gradient-text mb-4 leading-tight">${data.title}</h1>
+                                <p class="text-base sm:text-xl text-slate-300 font-light leading-relaxed">${data.subtitle}</p>
+                            </div>
+
+                            <div class="relative z-10 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-gold-500/20 border border-gold-500/40 flex items-center justify-center text-gold-400 font-bold">
+                                        <i class="fa-solid fa-users text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-slate-400">Thành viên thực hiện</div>
+                                        <div class="text-sm font-bold text-white">${data.presenters.join(" & ")}</div>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-slate-400 italic">Nhấn phím mũi tên [→] để tiếp tục</div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case "objectives":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1 mb-6">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
+                                ${data.items.map(item => `
+                                    <div class="glass-card p-5 rounded-xl flex items-start gap-4 border-l-4 border-l-gold-500 hover:translate-x-1 transition duration-200">
+                                        <div class="p-3 bg-gold-500/10 text-gold-400 rounded-lg">
+                                            <i class="fa-solid ${item.icon} text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-slate-100 text-base mb-1">${item.title}</h3>
+                                            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">${item.desc}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-500 text-right">Khung lý thuyết môn Học Pháp Luật Đại Cương</div>
+                        </div>
+                    `;
+                    break;
+
+                case "hook":
+                    html = `
+                        <div class="relative w-full h-full flex flex-col justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 my-auto items-center">
+                                <div class="md:col-span-7 glass-card-gold p-6 sm:p-8 rounded-2xl relative">
+                                    <i class="fa-solid fa-quote-left text-4xl text-gold-500/30 absolute top-4 left-4"></i>
+                                    <p class="text-base sm:text-lg text-slate-200 italic leading-relaxed pt-4 relative z-10">${data.quote}</p>
+                                </div>
+                                <div class="md:col-span-5 grid grid-cols-1 gap-3">
+                                    ${data.stats.map(s => `
+                                        <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+                                            <span class="text-xs sm:text-sm text-slate-300">${s.label}</span>
+                                            <span class="text-xl sm:text-2xl font-extrabold text-gold-400">${s.number}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-400">Pháp luật là công cụ quản lý xã hội sống động, không chỉ là văn bản tĩnh.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "concept":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="my-auto space-y-6">
+                                <div class="p-5 sm:p-6 rounded-xl bg-gradient-to-r from-navy-800 to-slate-900 border border-gold-500/30 text-slate-100 font-medium text-base sm:text-lg leading-relaxed shadow-lg">
+                                    <i class="fa-solid fa-lightbulb text-gold-400 mr-2"></i> ${data.mainText}
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    ${data.points.map((p, i) => `
+                                        <div class="glass-card p-4 rounded-xl">
+                                            <div class="text-gold-400 font-bold text-sm mb-2 flex items-center gap-2">
+                                                <span class="w-5 h-5 rounded-full bg-gold-500/20 flex items-center justify-center text-xs">${i+1}</span>
+                                                ${p.label}
+                                            </div>
+                                            <p class="text-xs text-slate-300 leading-relaxed">${p.detail}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-500">Nguồn: Giáo trình Pháp luật Đại cương</div>
+                        </div>
+                    `;
+                    break;
+
+                case "features":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-auto">
+                                ${data.cards.map(c => `
+                                    <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border-t-2 border-t-gold-500 hover:-translate-y-1 transition duration-300">
+                                        <div>
+                                            <div class="flex justify-between items-center mb-4">
+                                                <span class="text-3xl font-black text-gold-500/40">${c.num}</span>
+                                                <i class="fa-solid ${c.icon} text-gold-400 text-xl"></i>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-white mb-2">${c.title}</h3>
+                                            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${c.desc}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-400">Căn cứ xác định hành vi pháp lý của cá nhân và tổ chức.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "examples":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 my-auto">
+                                ${data.examples.map(ex => `
+                                    <div class="glass-card rounded-xl overflow-hidden flex flex-col">
+                                        <div class="h-32 bg-cover bg-center" style="background-image: url('${ex.img}')"></div>
+                                        <div class="p-4 flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 bg-gold-500/20 text-gold-400 rounded">${ex.tag}</span>
+                                                <h3 class="font-bold text-sm text-white mt-2 mb-1">${ex.title}</h3>
+                                                <p class="text-xs text-slate-300 leading-relaxed">${ex.desc}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-500">Mỗi hành vi xã hội đúng luật đều là Thực hiện pháp luật.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "grid4":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
+                                ${data.forms.map(f => `
+                                    <div class="glass-card p-5 rounded-2xl relative overflow-hidden group">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <span class="w-8 h-8 rounded-full bg-slate-800 text-gold-400 font-bold flex items-center justify-center text-sm">${f.id}</span>
+                                            <span class="text-xs font-bold px-2.5 py-1 bg-white/10 text-slate-200 rounded-full">${f.badge}</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-white mb-1">${f.name}</h3>
+                                        <p class="text-xs text-slate-300 leading-relaxed">${f.desc}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-400">4 hình thức bao quát toàn bộ hành vi pháp lý trong đời sống.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "detail_form":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                    <span class="text-xs font-bold px-3 py-1 bg-gold-500/20 text-gold-300 border border-gold-500/30 rounded-full">${data.badge}</span>
+                                </div>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 my-auto items-center">
+                                <div class="md:col-span-7 space-y-4">
+                                    <div class="p-4 rounded-xl bg-navy-800/80 border border-slate-700 text-sm text-slate-200 leading-relaxed">
+                                        <strong class="text-gold-400">Định nghĩa:</strong> ${data.def}
+                                    </div>
+                                    <div class="space-y-2">
+                                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Đặc điểm nhận biết:</h4>
+                                        ${data.characteristics.map(c => `
+                                            <div class="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
+                                                <i class="fa-solid fa-circle-check text-gold-400 text-xs mt-1"></i>
+                                                <span>${c}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="md:col-span-5">
+                                    <div class="h-48 sm:h-56 rounded-xl bg-cover bg-center shadow-lg border border-slate-700" style="background-image: url('${data.img}')"></div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-500">Hình thức chủ động thực hiện quyền lợi của bản thân.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "special_ad":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
+                                ${data.points.map((p, i) => `
+                                    <div class="glass-card p-5 rounded-xl border-l-4 border-l-rose-500">
+                                        <h3 class="font-bold text-sm text-rose-300 mb-1">0${i+1}. ${p.title}</h3>
+                                        <p class="text-xs text-slate-300 leading-relaxed">${p.text}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-400">Áp dụng pháp luật là hình thức duy nhất mang tính quyền lực đơn phương của Nhà nước.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "cases_ad":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-auto">
+                                ${data.list.map(item => `
+                                    <div class="glass-card p-5 rounded-xl flex items-start gap-4">
+                                        <div class="p-3 bg-rose-500/20 text-rose-400 rounded-lg">
+                                            <i class="fa-solid ${item.icon} text-lg"></i>
+                                        </div>
+                                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed my-auto">${item.text}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-500">Nhà nước can thiệp để bảo đảm trật tự và thực thi công lý.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "comparison":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="overflow-x-auto my-auto">
+                                <table class="w-full text-left text-xs sm:text-sm border-collapse">
+                                    <thead>
+                                        <tr class="bg-navy-800 text-gold-400 border-b border-slate-700">
+                                            ${data.headers.map(h => `<th class="p-3 font-bold">${h}</th>`).join('')}
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-800">
+                                        ${data.rows.map(row => `
+                                            <tr class="hover:bg-slate-800/40 transition">
+                                                <td class="p-3 font-bold text-slate-100">${row[0]}</td>
+                                                <td class="p-3 text-slate-300">${row[1]}</td>
+                                                <td class="p-3 text-slate-300">${row[2]}</td>
+                                                <td class="p-3 text-gold-300/80 font-mono text-xs">${row[3]}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-xs text-slate-400">So sánh tổng hợp giúp phân biệt nhanh 4 hình thức THPL.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "student":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-auto">
+                                ${data.actions.map(a => `
+                                    <div class="glass-card p-4 sm:p-5 rounded-xl border-l-4 ${a.color}">
+                                        <h3 class="font-bold text-sm text-white mb-1">${a.title}</h3>
+                                        <p class="text-xs text-slate-300 leading-relaxed">${a.detail}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-400">Sinh viên thực hiện tốt pháp luật chính là xây dựng văn hóa học đường văn minh.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "quiz":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-xl sm:text-2xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="my-auto space-y-4">
+                                <div class="glass-card p-4 rounded-xl border border-slate-700">
+                                    <div class="text-xs text-gold-400 font-bold mb-1">TÌNH HUỐNG:</div>
+                                    <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">${data.scenario}</p>
+                                </div>
+                                <div class="p-3 bg-navy-800 rounded-lg text-xs sm:text-sm font-semibold text-white border-l-2 border-l-gold-500">
+                                    ❓ ${data.question}
+                                </div>
+                                <div>
+                                    <button onclick="toggleAnswer(this)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-gold-400 font-semibold text-xs rounded-lg border border-slate-700 transition flex items-center gap-2">
+                                        <i class="fa-solid fa-key"></i> Xem Đáp Án
+                                    </button>
+                                    <div class="answer-box hidden mt-3 p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs sm:text-sm text-emerald-200 whitespace-pre-line leading-relaxed">
+                                        ${data.answer}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-500">Nhấn nút "Xem Đáp Án" để hiển thị phân tích.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "summary":
+                    html = `
+                        <div class="flex flex-col h-full justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-gold-400 tracking-wider uppercase">${data.category}</span>
+                                <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">${data.title}</h2>
+                            </div>
+                            <div class="my-auto space-y-3 max-w-3xl">
+                                ${data.bullets.map((b, i) => `
+                                    <div class="glass-card p-4 rounded-xl flex items-center gap-4">
+                                        <span class="w-7 h-7 rounded-full bg-gold-500 text-navy-950 font-black flex items-center justify-center text-xs flex-shrink-0">${i+1}</span>
+                                        <p class="text-xs sm:text-sm font-medium text-slate-200 leading-relaxed">${b}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="text-xs text-slate-400">Nắm vững bản chất - Vận dụng chuẩn xác.</div>
+                        </div>
+                    `;
+                    break;
+
+                case "thankyou":
+                    html = `
+                        <div class="relative w-full h-full flex flex-col justify-between p-6 sm:p-10 rounded-xl overflow-hidden text-center">
+                            <div class="absolute inset-0 z-0 opacity-15 bg-cover bg-center" style="background-image: url('${data.bgImage}')"></div>
+                            
+                            <div class="relative z-10 flex justify-center">
+                                <span class="px-3 py-1 bg-gold-500/20 text-gold-400 border border-gold-500/30 rounded-full text-xs font-semibold tracking-wider uppercase">${data.badge}</span>
+                            </div>
+
+                            <div class="relative z-10 my-auto">
+                                <h1 class="text-2xl sm:text-4xl md:text-5xl font-black gradient-text mb-4">${data.title}</h1>
+                                <p class="text-sm sm:text-base text-slate-300 font-light">${data.subtitle}</p>
+                            </div>
+
+                            <div class="relative z-10 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-400">
+                                <div>Báo cáo bởi: <strong class="text-white">${data.presenters.join(" & ")}</strong></div>
+                                <div>Chương IV: Thực Hiện Pháp Luật</div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+
+            slideContent.innerHTML = html;
+        }
+
+        function toggleAnswer(btn) {
+            const answerBox = btn.nextElementSibling;
+            if (answerBox.classList.contains('hidden')) {
+                answerBox.classList.remove('hidden');
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Ẩn Đáp Án';
+            } else {
+                answerBox.classList.add('hidden');
+                btn.innerHTML = '<i class="fa-solid fa-key"></i> Xem Đáp Án';
+            }
+        }
+
+        function goToNextSlide() {
+            if (currentSlide < slidesData.length - 1) {
+                currentSlide++;
+                renderSlide(currentSlide);
+            }
+        }
+
+        function goToPrevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                renderSlide(currentSlide);
+            }
+        }
+
+        prevBtn.addEventListener('click', goToPrevSlide);
+        nextBtn.addEventListener('click', goToNextSlide);
+
+        slideSelect.addEventListener('change', (e) => {
+            currentSlide = parseInt(e.target.value);
+            renderSlide(currentSlide);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                e.preventDefault();
+                goToNextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                goToPrevSlide();
+            }
+        });
+
+        // Fullscreen Toggle
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // Initialize presentation
+        window.onload = function() {
+            initSelectOptions();
+            renderSlide(currentSlide);
+        };
+    </script>
+</body>
+</html>
